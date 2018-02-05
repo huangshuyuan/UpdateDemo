@@ -7,7 +7,7 @@
 
 * 3.当提示用户进行版本升级时，如果用户点击了“更新”，系统将自动从服务器上下载安装包并进行自动升级，如果点击取消将进入程序主界面。
 
-## 效果图如下：
+# 效果图如下：
 
 ![更新](http://upload-images.jianshu.io/upload_images/3805053-cbbe809e3cbf8c96.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![下载1](http://upload-images.jianshu.io/upload_images/3805053-cf963c6429bd3147.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
@@ -20,16 +20,18 @@
 
 
 
-## 下面介绍一下代码的实现：
+# 下面介绍一下代码的实现：
 
 * 1.获取应用的当前版本号，我是封装了一个工具类来获取
-
 ```
+
  // 获取本版本号，是否更新
         int vision = Tools.getVersion(this);
 
 ```
+
 获取当前版本号工具类：
+
 ```
 
 public class Tools {
@@ -68,6 +70,7 @@ public class Tools {
 ```
 
 * 2.获取服务器版本号，是否要更新（此处就是简单的网络请求拿到需要的数据即可，我是写了固定值）
+
 ```
  // 获取更新版本号
     private void getVersion(final int vision) {
@@ -106,9 +109,10 @@ public class Tools {
         }
     }
 ```
+
 * 3.接下来就是下载文件了
-（1） 显示下载
-此处用的是自定义按钮：
+## （1） 显示下载
+### 此处用的是自定义按钮：
 
 ```
  /**
@@ -161,7 +165,7 @@ public class Tools {
 
 ```
 
-原生的按钮：
+### 原生的按钮：
 
 ```  
  new android.app.AlertDialog.Builder(this)
@@ -201,7 +205,7 @@ public class Tools {
                 })
                 .show();
 ```
-（2）通过异步任务实现进度++
+### （2）通过异步任务实现进度++
 
 ```
 
@@ -458,9 +462,9 @@ public class Tools {
     }
 ```
 
-##Android 7.0 FileUriExposedException 的处理
+# Android 7.0 FileUriExposedException 的处理
 
-###发现问题
+### 发现问题
 
 前几天把手机系统升级到基于 Android 7.0，后来在升级调试一个应用时抛出如下异常信息：
 ```
@@ -545,7 +549,8 @@ public static void installApk(Context context,String apkPath) {
 
 
 |标签|路径|
-|---|---|
+
+
 |<files-path name="name" path="path" />|[Context.getFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getFilesDir%28%29)|
 |<cache-path name="name" path="path" />|[getCacheDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getCacheDir%28%29)
 |<external-path name="name" path="path" />|[Environment.getExternalStorageDirectory()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fos%2FEnvironment.html%23getExternalStorageDirectory%28%29)
