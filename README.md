@@ -1,13 +1,13 @@
 # Android应用更新-自动检测版本及自动升级
 
-##步骤：
+## 步骤：
 * 1.检测当前版本的信息AndroidManifest.xml-->manifest-->[Android]
 
 * 2.从服务器获取版本号（版本号存在于xml文件中）并与当前检测到的版本进行匹配，如果不匹配，提示用户进行升级，如果匹配则进入程序主界面。（demo中假设需要更新）
 
 * 3.当提示用户进行版本升级时，如果用户点击了“更新”，系统将自动从服务器上下载安装包并进行自动升级，如果点击取消将进入程序主界面。
 
-##效果图如下：
+## 效果图如下：
 
 ![更新](http://upload-images.jianshu.io/upload_images/3805053-cbbe809e3cbf8c96.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![下载1](http://upload-images.jianshu.io/upload_images/3805053-cf963c6429bd3147.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
@@ -20,7 +20,7 @@
 
 
 
-##下面介绍一下代码的实现：
+## 下面介绍一下代码的实现：
 
 * 1.获取应用的当前版本号，我是封装了一个工具类来获取
 
@@ -547,14 +547,15 @@ public static void installApk(Context context,String apkPath) {
 |标签|路径|
 |---|---|
 |<files-path name="name" path="path" />|[Context.getFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getFilesDir%28%29)|
-<cache-path name="name" path="path" />|[getCacheDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getCacheDir%28%29)
-<external-path name="name" path="path" />|[Environment.getExternalStorageDirectory()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fos%2FEnvironment.html%23getExternalStorageDirectory%28%29)
-<external-files-path name="name" path="path" />|[Context.getExternalFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalFilesDir%28java.lang.String%29)
+|<cache-path name="name" path="path" />|[getCacheDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getCacheDir%28%29)
+|<external-path name="name" path="path" />|[Environment.getExternalStorageDirectory()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fos%2FEnvironment.html%23getExternalStorageDirectory%28%29)
+|<external-files-path name="name" path="path" />|[Context.getExternalFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalFilesDir%28java.lang.String%29)
 |<external-cache-path name="name" path="path" />|[Context.getExternalCacheDir()](https://link.jianshu.comt=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalCacheDir%28%29)
 
 
 
 *   完成以步骤后，我们修改出问题的代码如下：
+
 
 ```
 /**
