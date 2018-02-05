@@ -550,12 +550,13 @@ public static void installApk(Context context,String apkPath) {
 
 |标签|路径|
 |---|---|
+|<files-path name="name" path="path" />|[Context.getFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getFilesDir%28%29)|
+<cache-path name="name" path="path" />|[getCacheDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getCacheDir%28%29)
+<external-path name="name" path="path" />|[Environment.getExternalStorageDirectory()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fos%2FEnvironment.html%23getExternalStorageDirectory%28%29)
+<external-files-path name="name" path="path" />|[Context.getExternalFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalFilesDir%28java.lang.String%29)
+|<external-cache-path name="name" path="path" />|[Context.getExternalCacheDir()](https://link.jianshu.comt=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalCacheDir%28%29)
 
-|<files-path name="name" path="path" /> |[Context.getFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getFilesDir%28%29)|
-|<cache-path name="name" path="path" /> |[getCacheDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getCacheDir%28%29)
-|<external-path name="name" path="path" /> |[Environment.getExternalStorageDirectory()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fos%2FEnvironment.html%23getExternalStorageDirectory%28%29)
-|<external-files-path name="name" path="path" /> |[Context.getExternalFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalFilesDir%28java.lang.String%29)
-|<external-cache-path name="name" path="path" /> |[Context.getExternalCacheDir()](https://link.jianshu.comt=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalCacheDir%28%29)
+具体详情参看简书：https://www.jianshu.com/p/2ab0459a9c3c
 
 
 
