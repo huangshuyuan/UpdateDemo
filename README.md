@@ -458,5 +458,142 @@ public class Tools {
     }
 ```
 
+##Android 7.0 FileUriExposedException 的处理
+
+###发现问题
+
+前几天把手机系统升级到基于 Android 7.0，后来在升级调试一个应用时抛出如下异常信息：
+```
+android.os.FileUriExposedException: file:///storage/emulated/0/Android/data/com.skyrin.bingo/cache/app/app.apk exposed beyond app through Intent.getData()
+at android.os.StrictMode.onFileUriExposed(StrictMode.java:1799)
+
+at com.skyrin.bingo.update.AppUpdate.installApk(AppUpdate.java:295)
+```
+根据如上日志找到 AppUpdate 类下的 installApk 方法：
+```
+/**
+ * 安装apk
+ */
+public static void installApk(Context context,String apkPath) {
+    if (TextUtils.isEmpty(apkPath)){
+        Toast.makeText(context,"更新失败！未找到安装包", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    File apkFile = new File(apkPath
+            + apkCacheName);
+
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.setDataAndType(
+            Uri.fromFile(apkFile),
+            "application/vnd.android.package-archive");
+    context.startActivity(intent); 
+}
+```
+问题出在启动安装程序阶段
+由于没升级 7.0 系统之前都没有问题，于是就在 Android 官网查看了一下 [Android 7.0 新特性](https://link.jianshu.com/?t=https%3A%2F%2Fdeveloper.android.google.cn%2Fabout%2Fversions%2Fnougat%2Fandroid-7.0-changes.html)，终于发现其中 “在应用间共享文件” 一栏明确指出了这个问题
+![](http://upload-images.jianshu.io/upload_images/3805053-236823b510646117.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
+
+## 解决问题
+
+官方给出的解决方式是通过 FileProvider 来为所共享的文件 Uri 添加临时权限，详细[请看这里](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Ftraining%2Fsecure-file-sharing%2Fsetup-sharing.html%23DefineMetaData)
+
+*   在 <application> 标签下添加 FileProvider 节点
+
+```
+<application
+   ...>
+   ...
+    <provider
+        android:name="android.support.v4.content.FileProvider"
+        android:authorities="com.skyrin.bingo.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+    </provider>
+   ...
+</application>
+
+```
+
+`android：authority` 属性指定要用于 FileProvider 生成的 content URI 的 URI 权限，这里推荐使用 `包名.fileprovider` 以确保其唯一性。
+
+`<provider>` 的 `<meta-data>` 子元素指向一个 XML 文件，用于指定要共享的目录。
+
+*   在 `res/xml` 目录下创建文件 file_paths.xml 内容如下：
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-cache-path path="app/" name="apk"/>
+</paths>
+
+```
+
+`<external-cache-path>` 表示应用程序内部存储目录下的 `cache/` 目录，完整路径为 `Android/data/com.xxx.xxx/cache/`。
+
+`path` 属性用于指定子目录。
+
+`name` 属性告诉 FileProvider 为 `Android/data/com.xxx.xxx/cache/app/` 创建一个名为 `apk` 的路径字段。
+
+想要通过 FileProvider 为文件生成 content URI 只能在此处指定目录，以上示例就表示我将要共享 `Android/data/com.xxx.xxx/cache/app/` 这个目录，除此之外还可以共享其它目录，对应的路径如下：
+
+
+|标签|路径|
+|---|---|
+|<files-path name="name" path="path" />|[Context.getFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getFilesDir%28%29)|
+<cache-path name="name" path="path" />|[getCacheDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getCacheDir%28%29)
+<external-path name="name" path="path" />|[Environment.getExternalStorageDirectory()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fos%2FEnvironment.html%23getExternalStorageDirectory%28%29)
+<external-files-path name="name" path="path" />|[Context.getExternalFilesDir()](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalFilesDir%28java.lang.String%29)
+|<external-cache-path name="name" path="path" />|[Context.getExternalCacheDir()](https://link.jianshu.comt=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fcontent%2FContext.html%23getExternalCacheDir%28%29)
+
+
+
+*   完成以步骤后，我们修改出问题的代码如下：
+
+```
+/**
+ * 安装apk
+ */
+public static void installApk(Context context,String apkPath) {
+    if (TextUtils.isEmpty(apkPath)){
+        Toast.makeText(context,"更新失败！未找到安装包", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    File apkFile = new File(apkPath
+            + apkCacheName);
+
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    //Android 7.0 系统共享文件需要通过 FileProvider 添加临时权限，否则系统会抛出 FileUriExposedException .
+    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Uri contentUri = FileProvider.getUriForFile(context,"com.skyrin.bingo.fileprovider",apkFile);
+        intent.setDataAndType(contentUri,"application/vnd.android.package-archive");
+    }else {
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setDataAndType(
+                Uri.fromFile(apkFile),
+                "application/vnd.android.package-archive");
+    }
+    context.startActivity(intent);
+}
+...
+//调用，apkPath 入参就是 xml 中共享的路径
+String apkPath = context.getExternalCacheDir().getPath()+ File.separator+"app"+File.separator;
+AppUpdate.installApk(context,apkPath );
+
+```
+
+## 结语
+
+除了上面这个问题，在 Android 7.0 之前开发的分享图文、浏览编辑本地图片、共享互传文件等功能如果没有使用 FileProvider 来生成 URI 的话，在 Android 7.0 上就必须做这种适配了，所以平时建议大家多关注 Android 新的 API ，尽早替换已被官方废弃的 API ，实际上 [FileProvider](https://link.jianshu.com?t=https%3A%2F%2Fdeveloper.android.google.cn%2Freference%2Fandroid%2Fsupport%2Fv4%2Fcontent%2FFileProvider.html)  在 API Level 22 已经添加了。
+
+
 
 
